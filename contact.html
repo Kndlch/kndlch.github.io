@@ -16,12 +16,12 @@
         <ul>
             <li><strong>Email:</strong> <a href="mailto:c.kene0521@gmail.com">c.kene0521@gmail.com</a></li>
             <li><strong>Instagram:</strong> <a href="https://www.instagram.com/kennythemartian" target="_blank">@kennythemartian</a></li>
-            <li><strong>LinkedIn:</strong> <a href="https://www.linkedin.com/in/kndlch" target="_blank">Kene Chukwuma</a></li>
+            <li><strong>LinkedIn:</strong> <a href="https://www.linkedin.com/in/kene-cornell/" target="_blank">Kene Chukwuma</a></li>
         </ul>
         <!-- Add a link to go back to the home page -->
         <a href="index.html" class="button">Back to Home</a>
 
-        <!-- Comment Section -->
+         <!-- Comment Section -->
         <section class="comment-section">
             <h2>Leave a Comment</h2>
             <form id="comment-form">
@@ -39,10 +39,58 @@
                 </div>
                 <button type="submit" class="button">Submit Comment</button>
             </form>
+
+            <div id="comments-list">
+                <!-- Comments will be dynamically added here -->
+            </div>
         </section>
     </main>
     <footer>
         <p>© 2025 Ekenedilichukwu Chukwuma</p>
     </footer>
+
+    <script>
+        const backendUrl = 'http://localhost:3000'; // Replace with your backend URL
+
+        // Fetch and display comments
+        async function fetchComments() {
+            const response = await fetch(`${backendUrl}/comments`);
+            const comments = await response.json();
+            const commentsList = document.getElementById('comments-list');
+            commentsList.innerHTML = comments.map(comment => `
+                <div class="comment">
+                    <h3>${comment.name}</h3>
+                    <p><strong>Email:</strong> ${comment.email}</p>
+                    <p>${comment.comment}</p>
+                    <small>${new Date(comment.timestamp).toLocaleString()}</small>
+                </div>
+            `).join('');
+        }
+
+        // Submit comment form
+        document.getElementById('comment-form').addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            const comment = document.getElementById('comment').value;
+
+            const response = await fetch(`${backendUrl}/comments`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ name, email, comment }),
+            });
+
+            if (response.ok) {
+                fetchComments(); // Refresh comments
+                document.getElementById('comment-form').reset();
+            }
+        });
+
+        // Load comments when the page loads
+        fetchComments();
+    </script>
 </body>
 </html>
